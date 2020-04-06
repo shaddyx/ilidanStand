@@ -1,7 +1,7 @@
 {
     "sketch": "main/main.ino",
-    "board": "MicroCore:avr:attiny13",
-    "configuration": "clock=9M6,BOD=2v7,lto=Os_flto",
+    "board": "attiny:avr:ATtinyX5",
+    "configuration": "cpu=attiny45,clock=internal16",
     "programmer": "USBasp",
     "port": "/dev/ttyS9"
 }

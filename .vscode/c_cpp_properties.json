@@ -3,6 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
+                "/home/shaddy/.arduino15/packages/attiny/hardware/avr/1.0.2/**",
                 "/home/shaddy/sloeber-workspace/ledStrip/main/**",
                 "/home/shaddy/Arduino/libraries/FastLED",
                 "/home/shaddy/.arduino15/packages/MicroCore/hardware/avr/1.0.4/**"
