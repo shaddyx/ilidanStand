@@ -16,12 +16,15 @@
 #include "arrayTools.h"
 #include "mapper.h"
 #include "colorutil.h"
+#include <PMButton.h>
 //#include "lib/light_ws2812.h"
 
 #define NUM_LEDS 14
 #define NUM_REAL_LEDS 18
 Single_led leds[NUM_LEDS];
 #define lastLedIndex array_size(leds) - 1
+
+PMButton button(A3);
 
 //cRGB color = { 255, 255, 255 };
 //const cRGB color PROGMEM = { 255, 255, 255 };
@@ -30,7 +33,9 @@ const cRGB color = { 255, 0, 0 };
 // the setup function runs once when you press reset or power the board
 void setup() {
 	Serial.begin(115200);
-	Serial.println("Started: " + String(array_size(leds)) + " : " + String(sizeof(Single_led)));
+	Serial.println(
+			"Started: " + String(array_size(leds)) + " : "
+					+ String(sizeof(Single_led)));
 	leds[0].stopAll();
 	leds[0].started = true;
 	for (int i = 0; i < array_size(leds); i++) {
@@ -39,6 +44,7 @@ void setup() {
 		}
 		leds[i].color = &color;
 	}
+	button.begin();
 //	while (true){
 //
 //	}
@@ -47,54 +53,63 @@ void setup() {
 uint8_t brightness = 0;
 int8_t increment = 2;
 long prev = 0;
+long rnd = 0;
+bool allowed = true;
 
 // the loop function runs over and over again forever
 void loop() {
 	delay(13);              // wait for a second
 	brightness += increment;
-	if (increment > 0 && brightness >= 250){
-		increment = - increment;
+	if (increment > 0 && brightness >= 250) {
+		increment = -increment;
 	}
 
-	if (increment < 0 && brightness <= 10){
-		increment = - increment;
+	if (increment < 0 && brightness <= 10) {
+		increment = -increment;
 	}
-
 	bool allowDelay = false;
-	for (int i = 0; i < 15; i++) {
-		leds[0].nextStep();
-		if (leds[lastLedIndex].finished) {
-			//Serial.println("Callback called:");
-			leds[0].stopAll();
-			allowDelay = true;
-			break;
+
+	if (button.clicked()){
+		allowed = !allowed;
+	}
+	if (allowed) {
+		for (int i = 0; i < 15; i++) {
+			leds[0].nextStep();
+			if (leds[lastLedIndex].finished) {
+				//Serial.println("Callback called:");
+				leds[0].stopAll();
+				allowDelay = true;
+				break;
+			}
 		}
 	}
+
 	cRGB colors[NUM_REAL_LEDS];
-	for (int i=0; i < NUM_REAL_LEDS; i++){
+	for (int i = 0; i < NUM_REAL_LEDS; i++) {
 		colors[i].r = 0;
 		colors[i].g = 0;
 		colors[i].b = 0;
 	}
-	for (int i=14; i < NUM_REAL_LEDS; i++){
+
+	for (int i = 14; i < NUM_REAL_LEDS; i++) {
 		colors[i] = getColor(color, brightness);
 	}
 	map(colors, leds);
 	ws2812_setleds(colors, NUM_REAL_LEDS);
 
-	if (allowDelay){
+	if (allowDelay) {
 		//delay (2000);
 		prev = millis();
+		rnd = random(4000, 15000);
 	}
-	if (millis() < prev){
+	if (millis() < prev) {
 		prev = millis();
 	}
-	if (prev != 0 && millis() - prev > 2000){
+	if (prev != 0 && millis() - prev > rnd) {
 		prev = 0;
 		leds[0].started = true;
 	}
-
+	button.checkSwitch();
 //Serial.println("Callback called:" + String(led -> brightness));
-
 
 }
