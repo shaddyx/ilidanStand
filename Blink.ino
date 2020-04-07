@@ -19,7 +19,7 @@
 #include <PMButton.h>
 //#include "lib/light_ws2812.h"
 
-#define NUM_LEDS 14
+#define NUM_LEDS 15
 #define NUM_REAL_LEDS 18
 Single_led leds[NUM_LEDS];
 #define lastLedIndex array_size(leds) - 1
